@@ -1,53 +1,145 @@
-import Link from "next/link";
+// create a sudoku board
+"use client";
+import React, { useState } from 'react';
+import { produce } from 'immer';
 
-import { LatestPost } from "@/app/_components/post";
-import { api, HydrateClient } from "@/trpc/server";
+type Cell = {
+  row: number;
+  col: number;
+  value: number | null;
+};
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+type Board = Cell[][];
 
-  void api.post.getLatest.prefetch();
+const createBoard = (): Board => {
+  return Array.from({ length: 9 }, (_, rowIndex) => {
+    return Array.from({ length: 9 }, (_, colIndex) => {
+      return {
+        row: rowIndex,
+        col: colIndex,
+        value: null,
+      };
+    });
+  });
+};
+
+// generate a random sudoku board
+
+function isValid(board: Board, row: number, col: number, num: number): boolean {
+  for (let x = 0; x < 9; x++) {
+    if (board[row]?.[x]?.value === num || board[x]?.[col]?.value === num) {
+      console.log('row or col');
+      return false;
+    }
+  }
+  const startRow = Math.floor(row / 3) * 3;
+  const startCol = Math.floor(col / 3) * 3;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (board[startRow + i]?.[startCol + j]?.value === num) {
+        console.log('box');
+        return false;
+      }
+    }
+  }
+  console.log('valid');
+  return true;
+}
+
+function solveSudoku(board: Board, row = 0, col = 0): boolean {
+  if (row === 9) return true;
+  if (col === 9) return solveSudoku(board, row + 1, 0);
+  if (board[row]?.[col]?.value !== undefined) return solveSudoku(board, row, col + 1);
+  
+  for (let num = 1; num <= 9; num++) {
+    if (isValid(board, row, col, num)) {
+      if (board[row]?.[col]?.value !== undefined) {
+        board[row][col].value = num;
+        if (solveSudoku(board, row, col + 1)) return true;
+        board[row][col] = { row, col, value: 0 }; // backtrack
+      }
+    }
+  }
+  console.log('backtrack');
+  return false; // trigger backtracking
+}
+
+function generateSudokuBoard(): Board {
+  console.log('generate');
+  const board = createBoard();
+  console.log("empty board", board);
+
+  solveSudoku(board);
+  console.log("solved board", board);
+
+  return board;
+}
+
+const Cell = ({ cell, onClick, isSelected }: { cell: Cell; onClick: (cell: Cell) => void; isSelected: boolean }) => {
+  return (
+    <div
+      className={`cell ${isSelected ? 'selected' : ''} border border-black w-10 h-10 flex justify-center items-center cursor-pointer`}
+      onClick={() => onClick(cell)}
+    >
+      {cell.value}
+    </div>
+  );
+};
+
+const NumberSelector = ({ onClick }: { onClick: (value: number) => void }) => {
+  return (
+    <div className='flex space-x-10'>
+      {Array.from({ length: 9 }, (_, index) => (
+        <div key={index} className="border rounded-lg p-4 cursor-pointer" onClick={() => onClick(index + 1)}>
+          {index + 1}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SudokuBoard = () => {
+  const [board, setBoard] = useState<Board>(generateSudokuBoard());
+  const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+
+  const handleCellClick = (cell: Cell) => {
+    setSelectedCell(cell);
+  };
+
+  const handleNumberClick = (value: number) => {
+    if (selectedCell) {
+      const { row, col } = selectedCell;
+      setBoard((prevBoard) => {
+        const newBoard: Board = produce(prevBoard, (draft) => {
+          if (draft[row]?.[col]) {
+            draft[row][col].value = value;
+          }
+        });
+        return newBoard;
+      });
+    }
+  };
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+    // use tailwind css to style the sudoku board
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className='mb-4'>
+        {board.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex justify-center">
+            {row.map((cell) => (
+              <Cell
+                key={cell.col}
+                cell={cell}
+                onClick={handleCellClick}
+                isSelected={selectedCell?.row === cell.row && selectedCell?.col === cell.col}
+              />
+            ))}
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-          </div>
-
-          <LatestPost />
-        </div>
-      </main>
-    </HydrateClient>
+        ))}
+      </div>
+      <NumberSelector onClick={handleNumberClick} />
+    </div>
   );
-}
+};
+
+export default SudokuBoard;
