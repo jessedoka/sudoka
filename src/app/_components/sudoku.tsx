@@ -172,7 +172,7 @@ export function generateSudokuBoard(difficulty: number): Board {
 const Cell = ({ cell, onClick, isSelected, highlighted }: { cell: Cell; onClick: (cell: Cell) => void; isSelected: boolean; highlighted: boolean }) => {
     return (
 
-        <div className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg  
+        <div className={`w-4 h-4 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg  
             ${isSelected ? 'duration-400 animate-pulse' : ''} cursor-pointer hover:bg-gray-400 duration-400 transition-colors ${cell.editable ? 'bg-gray-200' : ''} ${highlighted ? 'bg-sky-200' : ''} ${cell.col === 2 || cell.col === 5 ? 'mr-2' : ''} ${cell.row === 2 || cell.row === 5 ? 'mb-4' : ''}`}
             onClick={() => cell.editable && onClick(cell)}
         >
@@ -186,7 +186,11 @@ const NumberSelector = ({ onClick }: { onClick: (value: number) => void }) => {
         <div className='flex gap-2' >
             {
                 Array.from({ length: 9 }, (_, index) => (
-                    <div key={index} className="p-4 rounded-lg cursor-pointer hover:bg-gray-200 duration-400 transition-colors text-xl" onClick={() => onClick(index + 1)}>
+                    <div
+                        key={index}
+                        className="p-2 sm:p-4 rounded-lg cursor-pointer hover:bg-gray-200 duration-400 transition-colors text-lg sm:text-xl"
+                        onClick={() => onClick(index + 1)}
+                    >
                         {index + 1}
                     </div>
                 ))
@@ -252,10 +256,10 @@ const SudokuBoard = ({difficulty}: {difficulty: number}) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-4" >
+        <div className="flex flex-col items-center justify-center min-h-screen px-4">
             {isWon && <h2 className="text-xl sm:text-2xl font-bold text-green-600 mb-2 sm:mb-4" > You won! </h2>
             }
-            <div className="grid grid-cols-9 gap-1 sm:gap-2 mb-4" >
+            <div className="grid grid-cols-9 gap-4  mb-4">
                 {
                     board.map((row, rowIndex) =>
                         row.map((cell, colIndex) => (
