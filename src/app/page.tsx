@@ -169,17 +169,13 @@ function generateSudokuBoard(difficulty: number): Board {
   return board;
 }
 
-const Cell = ({ cell, onClick, isSelected }: { cell: Cell; onClick: (cell: Cell) => void; isSelected: boolean }) => {
+const Cell = ({ cell, onClick, isSelected, highlighted }: { cell: Cell; onClick: (cell: Cell) => void; isSelected: boolean; highlighted: boolean }) => {
   return (
-   
-    // when cell is clicked change colour 
 
-    <div className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-gray-300 ${isSelected ? 'bg-gray-200' : ''} cursor-pointer hover:bg-gray-200 duration-400 transition-colors ${cell.editable ? 'bg-white' : 'bg-gray-100'} `}
+    <div className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg  ${isSelected ? 'duration-400 animate-pulse' : ''} cursor-pointer hover:bg-gray-400 duration-400 transition-colors ${cell.editable ? 'bg-gray-200' : ''} ${highlighted ? 'bg-sky-200' : ''} ${cell.col === 2 || cell.col === 5 ? 'mr-2' : ''} ${cell.row === 2 || cell.row === 5 ? 'mb-4' : ''}`}
       onClick={() => cell.editable && onClick(cell)}>
       {cell.value} 
     </div>
-
-
 
   );
 };
@@ -202,6 +198,7 @@ const NumberSelector = ({ onClick }: { onClick: (value: number) => void }) => {
 const SudokuBoard = () => {
   const [board, setBoard] = useState<Board>(generateSudokuBoard(0.6));
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+  const [highlightedCells, setHighlightedCells] = useState<Set<string>>(new Set());
   const [isWon, setIsWon] = useState(false);
 
   useEffect(() => {
@@ -210,9 +207,33 @@ const SudokuBoard = () => {
     }
   }, [board]);
 
+  const calculateHighlightedCells = (cell: Cell) => {
+    const newHighlightedCells = new Set<string>();
+    const { row, col } = cell;
+
+    // Highlight row and column
+    for (let i = 0; i < 9; i++) {
+      newHighlightedCells.add(`${row},${i}`);
+      newHighlightedCells.add(`${i},${col}`);
+    }
+
+    // Highlight 3x3 grid
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let r = startRow; r < startRow + 3; r++) {
+      for (let c = startCol; c < startCol + 3; c++) {
+        newHighlightedCells.add(`${r},${c}`);
+      }
+    }
+
+    return newHighlightedCells;
+  };
+
   const handleCellClick = (cell: Cell) => {
     setSelectedCell(cell);
+    setHighlightedCells(calculateHighlightedCells(cell));
   };
+
 
   const handleNumberClick = (value: number) => {
     if (selectedCell) {
@@ -232,20 +253,18 @@ const SudokuBoard = () => {
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-4">Sudoku</h1>
       {isWon && <h2 className="text-xl sm:text-2xl font-bold text-green-600 mb-2 sm:mb-4">You won!</h2>}
-      <div className='mb-2 sm:mb-4'>
-        {board.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center">
-            {row.map((cell) => (
-              <Cell
-                key={cell.col}
-                cell={cell}
-                onClick={handleCellClick}
-                isSelected={selectedCell?.row === cell.row && selectedCell?.col === cell.col}
-                // Add Tailwind classes for larger touch targets on smaller screens
-              />
-            ))}
-          </div>
-        ))}
+      <div className="grid grid-cols-9 gap-1 sm:gap-2 mb-4">
+        {board.map((row, rowIndex) =>
+          row.map((cell, colIndex) => (
+            <Cell
+              key={`${rowIndex},${colIndex}`}
+              cell={cell}
+              onClick={handleCellClick}
+              isSelected={selectedCell?.row === rowIndex && selectedCell?.col === colIndex}
+              highlighted={highlightedCells.has(`${rowIndex},${colIndex}`)}
+            />
+          ))
+        )}
       </div>
       <NumberSelector onClick={handleNumberClick} />
     </div>
