@@ -122,8 +122,4 @@ const SudokuBoard = ({ generatedBoard }: { generatedBoard: string }) => {
     );
 };
 
-SudokuBoard.defaultProps = {
-    difficulty: 0.5,
-};
-
 export default SudokuBoard;

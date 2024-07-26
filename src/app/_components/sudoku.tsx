@@ -163,5 +163,4 @@ const generateSudokuBoard = (difficulty: number): Board => {
 
     return board;
 }
-
-export default generateSudokuBoard;
+export default generateSudokuBoard; 
