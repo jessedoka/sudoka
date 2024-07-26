@@ -1,14 +1,17 @@
-import Link from "next/link";
-import SudokuBoard from "./_components/sudoku";
-
+import SudokuBoard from "./_components/sudokuBoard";
 import { api, HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
-  // creating a sudoku game
+  // create a new puzzle 
+  const puzzle = await api.puzzle.createDailyPuzzle();
+  if (!puzzle) {
+    throw new Error("Failed to create puzzle");
+  }
+
   return (
     <HydrateClient>
       <div className="">
-        <SudokuBoard />
+        <SudokuBoard generatedBoard={puzzle.board as string} />
       </div>
     </HydrateClient>
   );
