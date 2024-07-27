@@ -118,6 +118,7 @@ const SudokuBoard = ({ generatedBoard }: { generatedBoard: string }) => {
                     )}
             </div>
             <NumberSelector onClick={handleNumberClick} />
+            {/* if isWon is true then have a generate button for the  */}
         </div>
     );
 };

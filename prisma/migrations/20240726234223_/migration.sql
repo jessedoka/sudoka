@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Puzzle" ALTER COLUMN "difficulty" SET DATA TYPE DOUBLE PRECISION;

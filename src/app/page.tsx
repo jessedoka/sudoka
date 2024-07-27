@@ -1,4 +1,4 @@
-import SudokuBoard from "./_components/sudokuBoard";
+import SudokuBoard from "../components/sudokuBoard";
 import { api, HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
@@ -10,7 +10,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
         <SudokuBoard generatedBoard={puzzle.board as string} />
       </div>
     </HydrateClient>
