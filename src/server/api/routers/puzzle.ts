@@ -2,15 +2,11 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import generateSudokuBoard  from "@/components/sudoku";
-import { create } from "domain";
-
-
 
 export const puzzleRouter = createTRPCRouter({
     createDailyPuzzle: publicProcedure
         .mutation(async({ ctx }) => {
             // difficulty is a number between 0 and 1 and is dependent on the date and year of the request
-            const difficulty = Math.random();
 
             // check if there is already a puzzle for today then return it
             const today = new Date();
@@ -31,8 +27,8 @@ export const puzzleRouter = createTRPCRouter({
             
             return ctx.db.puzzle.create({
                 data: {
-                    difficulty: difficulty,
-                    board: JSON.stringify(generateSudokuBoard(difficulty)),
+                    board: JSON.stringify(generateSudokuBoard(0.65)),
+                    difficulty: 0.65
                 },
             });
         }),

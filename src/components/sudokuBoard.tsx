@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { produce } from 'immer';
 import { checkSudokuSolution } from './sudoku';
+import generateSudokuBoard  from './sudoku';
+
 
 type Cell = {
     row: number;
@@ -80,6 +82,18 @@ const SudokuBoard = ({ generatedBoard }: { generatedBoard: string }) => {
     };
 
     const handleCellClick = (cell: Cell) => {
+        if (!cell.editable) {
+            return;
+        }
+
+        if (selectedCell && selectedCell.row === cell.row && selectedCell.col === cell.col) {
+            setSelectedCell(null);
+            setHighlightedCells(new Set());
+            return;
+        }
+
+        
+
         setSelectedCell(cell);
         setHighlightedCells(calculateHighlightedCells(cell));
     };
@@ -111,7 +125,7 @@ const SudokuBoard = ({ generatedBoard }: { generatedBoard: string }) => {
                                 key={`${rowIndex},${colIndex}`}
                                 cell={cell}
                                 onClick={handleCellClick}
-                                isSelected={selectedCell?.row === rowIndex && selectedCell?.col === colIndex}
+                                isSelected={isWon ? false : selectedCell?.row === rowIndex && selectedCell?.col === colIndex}
                                 highlighted={highlightedCells.has(`${rowIndex},${colIndex}`)}
                             />
                         ))
@@ -119,6 +133,20 @@ const SudokuBoard = ({ generatedBoard }: { generatedBoard: string }) => {
             </div>
             <NumberSelector onClick={handleNumberClick} />
             {/* if isWon is true then have a generate button for the  */}
+            {isWon && <button
+                className="p-2 sm:p-4 rounded-lg cursor-pointer hover:bg-gray-200 duration-400 transition-colors text-lg sm:text-xl"
+                onClick={() => {
+                    const generatedBoard = JSON.stringify(generateSudokuBoard(0.65));
+                    const newBoard = JSON.parse(generatedBoard) as Board;
+                    setBoard(newBoard);
+                    setIsWon(false);
+                    setHighlightedCells(new Set());
+                    setSelectedCell(null);          
+                }}
+            >
+                Generate new puzzle
+            </button>
+            }
         </div>
     );
 };
