@@ -29,6 +29,7 @@
     "immer": "^10.1.1",
     "lucide-react": "^0.416.0",
     "next": "^14.2.4",
+    "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "server-only": "^0.0.1",

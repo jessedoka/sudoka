@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import Link from "next/link";
 import { Package2Icon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ModeToggle } from "./modetoggle";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -30,6 +31,7 @@ export default function Navigation() {
                         <span>{item.name}</span>
                     </Link>
                 ))}
+                <ModeToggle />
             </nav>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
