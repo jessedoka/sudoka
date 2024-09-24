@@ -19,7 +19,7 @@ const navLinks = [
 export default function Navigation() {
     const pathname = usePathname();
     return (
-        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-muted/40 px-6 justify-between">
+        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b dark:bg-neutral-900 px-6 justify-between">
             <Link href="#" className="lg:hidden" prefetch={false}>
                 <Package2Icon className="h-6 w-6" />
                 <span className="sr-only">Home</span>
@@ -27,7 +27,7 @@ export default function Navigation() {
             <nav className="hidden lg:flex items-center gap-4">
                 {navLinks.map((item) => (
                     <Link key={item.name
-                    } href={item.href} className={`flex items-center gap-2 p-2 rounded-lg hover:bg-secondary ${pathname === item.href ? "bg-gray-200" : ""}`}>
+                    } href={item.href} className={`flex items-center gap-2 p-2 rounded-lg hover:bg-secondary ${pathname === item.href ? "dark:bg-muted/40" : ""}`}>
                         <span>{item.name}</span>
                     </Link>
                 ))}
@@ -40,7 +40,7 @@ export default function Navigation() {
                         <span className="sr-only">Toggle user menu</span>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="mt-5">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>Settings</DropdownMenuItem>
