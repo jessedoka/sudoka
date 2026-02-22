@@ -2,10 +2,7 @@ import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import Navigation from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-
-import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
   title: "Sudoka",
@@ -21,8 +18,7 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <Navigation />
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

@@ -1,20 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+import SudokuBoard from "@/components/sudokuBoard";
+import generateSudokuBoard from "@/components/sudoku";
 
-import SudokuBoard from "../components/sudokuBoard";
-import { api, HydrateClient } from "@/trpc/server";
+export default function Home() {
+    const board = generateSudokuBoard(0.65);
 
-export default async function Home() {
-  // create a new puzzle 
-  const puzzle = await api.puzzle.createDailyPuzzle();
-  if (!puzzle) {
-    throw new Error("Failed to create puzzle");
-  }
-
-  return (
-    <HydrateClient>
-      <div className="flex flex-col items-center justify-center min-h-screen px-4">
-        <SudokuBoard generatedBoard={puzzle.board} />
-      </div>
-    </HydrateClient>
-  );
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen px-4">
+            <SudokuBoard generatedBoard={JSON.stringify(board)} />
+        </div>
+    );
 }

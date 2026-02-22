@@ -1,18 +1,12 @@
 import SudokuBoard from "@/components/sudokuBoard";
-import { api, HydrateClient } from "@/trpc/server";
+import generateSudokuBoard from "@/components/sudoku";
 
-export default async function Play() {
-    // create a new puzzle 
-    const puzzle = await api.puzzle.createPuzzle({ difficulty: 0.02 });
-    if (!puzzle) {
-        throw new Error("Failed to create puzzle");
-    }
+export default function Play() {
+    const board = generateSudokuBoard(0.65);
 
     return (
-        <HydrateClient>
-            <div className="flex flex-col items-center justify-center min-h-screen px-4">
-                <SudokuBoard generatedBoard={puzzle.board} />
-            </div>
-        </HydrateClient>
+        <div className="flex flex-col items-center justify-center min-h-screen px-4">
+            <SudokuBoard generatedBoard={JSON.stringify(board)} />
+        </div>
     );
 }
